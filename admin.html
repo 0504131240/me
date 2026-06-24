@@ -152,6 +152,28 @@
       transition: all 0.15s;
     }
     .del-btn:hover { background: rgba(239,68,68,0.25); border-color: #f87171; }
+
+    .badge-yes {
+      display: inline-block;
+      background: rgba(74,222,128,0.12);
+      border: 1px solid rgba(74,222,128,0.4);
+      color: #4ade80;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .badge-no {
+      display: inline-block;
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.35);
+      color: #f87171;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 700;
+    }
   </style>
 </head>
 <body>
@@ -195,9 +217,11 @@
 
   function parseDoc(doc) {
     const f = doc.fields || {};
+    const attending = f.attending?.booleanValue;
     return {
       docName:   doc.name,
       name:      f.name?.stringValue || '',
+      attending: attending === undefined ? true : attending,
       guests:    f.guests?.integerValue || f.guests?.doubleValue || 0,
       phone:     f.phone?.stringValue || '',
       timestamp: f.timestamp?.timestampValue || null
@@ -227,10 +251,15 @@
         ? new Date(r.timestamp).toLocaleString('he-IL', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
         : '–';
       const safeDoc = encodeURIComponent(JSON.stringify(r.docName));
+      const attendBadge = r.attending
+        ? `<span class="badge-yes">מגיע ✓</span>`
+        : `<span class="badge-no">לא מגיע ✗</span>`;
+      const guestsCell = r.attending ? `<span class="badge">${r.guests}</span>` : '–';
       return `<tr>
         <td class="num-cell">${i + 1}</td>
         <td><strong>${r.name}</strong></td>
-        <td><span class="badge">${r.guests}</span></td>
+        <td>${attendBadge}</td>
+        <td>${guestsCell}</td>
         <td>${r.phone || '–'}</td>
         <td class="time-cell">${dateStr}</td>
         <td><button class="del-btn" onclick='deleteRsvp(${JSON.stringify(r.docName)})'>מחק</button></td>
@@ -240,7 +269,7 @@
     content.innerHTML = `
       <table>
         <thead><tr>
-          <th>#</th><th>שם</th><th>מגיעים</th><th>טלפון</th><th>שעת אישור</th><th></th>
+          <th>#</th><th>שם</th><th>הגעה</th><th>מגיעים</th><th>טלפון</th><th>שעת אישור</th><th></th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>`;

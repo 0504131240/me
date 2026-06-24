@@ -123,6 +123,37 @@
 
     input::placeholder { color: #b0957a; font-size: 14px; }
 
+    .attend-selector { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+    .attend-btn {
+      padding: 16px;
+      border: 2px solid rgba(201,162,39,0.4);
+      border-radius: 12px;
+      background: rgba(255,255,255,0.6);
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a3a6b;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .attend-btn:hover { border-color: #c9a227; background: rgba(201,162,39,0.1); }
+
+    .attend-btn.selected {
+      background: #1a6b2a;
+      border-color: #1a6b2a;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(26,107,42,0.35);
+    }
+
+    .attend-btn.attend-no.selected {
+      background: #6b1a1a;
+      border-color: #6b1a1a;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(107,26,26,0.35);
+    }
+
     .guests-selector { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
     .guest-btn {
@@ -249,6 +280,14 @@
       </div>
 
       <div class="form-group">
+        <label>האם תגיעו? <span style="color:#c9a227">*</span></label>
+        <div class="attend-selector">
+          <button type="button" class="attend-btn" id="btn-yes" onclick="setAttending(true)">✓ מגיע/ה</button>
+          <button type="button" class="attend-btn attend-no" id="btn-no" onclick="setAttending(false)">✗ לא מגיע/ה</button>
+        </div>
+      </div>
+
+      <div class="form-group" id="guests-group" style="display:none;">
         <label>מספר מגיעים (כולל אתם) <span style="color:#c9a227">*</span></label>
         <div class="guests-selector">
           <button type="button" class="guest-btn" data-val="1">1</button>
@@ -272,7 +311,7 @@
       <div id="error-msg" class="error-msg" style="display:none;"></div>
 
       <button class="submit-btn" id="submit-btn" onclick="submitRsvp()">
-        אני מאשר/ת הגעה ✓
+        שלח אישור
       </button>
     </div>
 
@@ -308,6 +347,16 @@
   const db = getFirestore(app);
 
   let selectedGuests = null;
+  let attending = null;
+
+  window.setAttending = (val) => {
+    attending = val;
+    document.getElementById('btn-yes').classList.toggle('selected', val === true);
+    document.getElementById('btn-no').classList.toggle('selected', val === false);
+    document.getElementById('guests-group').style.display = val ? 'block' : 'none';
+    if (!val) selectedGuests = 0;
+    document.getElementById('error-msg').style.display = 'none';
+  };
 
   document.querySelectorAll('.guest-btn').forEach(btn => {
     btn.addEventListener('click', () => {
@@ -331,26 +380,32 @@
       return;
     }
 
-    if (!selectedGuests) {
+    if (attending === null) {
+      errorEl.textContent = 'נא בחרו האם תגיעו';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    if (attending && !selectedGuests) {
       errorEl.textContent = 'נא בחרו כמה אנשים מגיעים';
       errorEl.style.display = 'block';
       return;
     }
 
-    // הצג הצלחה מיד — שמירה ב-Firebase ברקע
     document.getElementById('form-section').style.display = 'none';
-    document.getElementById('success-text').innerHTML =
-      `<strong>${name}</strong>, אישור ההגעה שלכם התקבל!<br/>מספר מגיעים: <strong>${selectedGuests}</strong><br/><br/>נשמח לראותכם!`;
+    const msg = attending
+      ? `<strong>${name}</strong>, אישור ההגעה שלכם התקבל!<br/>מספר מגיעים: <strong>${selectedGuests}</strong><br/><br/>נשמח לראותכם!`
+      : `<strong>${name}</strong>, קיבלנו את הודעתכם.<br/>חבל שלא תוכלו להגיע — תודה על העדכון.`;
+    document.getElementById('success-text').innerHTML = msg;
     document.getElementById('success-state').style.display = 'block';
 
     addDoc(collection(db, 'rsvps'), {
       name,
-      guests: selectedGuests,
+      attending,
+      guests: attending ? selectedGuests : 0,
       phone: phone || '',
       timestamp: serverTimestamp()
-    }).catch(() => {
-      // שמירה נכשלה בשקט — הנתונים יישמרו כשיחזור חיבור
-    });
+    }).catch(() => {});
   };
 </script>
 </body>
