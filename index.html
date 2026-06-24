@@ -47,23 +47,9 @@
       letter-spacing: 12px;
     }
 
-    .header-top-text {
-      color: #c9a227;
-      font-size: 13px;
-      letter-spacing: 1px;
-      margin-bottom: 12px;
-      opacity: 0.9;
-    }
-
+    .header-top-text { color: #c9a227; font-size: 13px; letter-spacing: 1px; margin-bottom: 12px; opacity: 0.9; }
     .header-title { color: #ffffff; font-size: 15px; font-weight: 400; margin-bottom: 6px; }
-
-    .header-main {
-      color: #c9a227;
-      font-size: 38px;
-      font-weight: 900;
-      line-height: 1;
-      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
-    }
+    .header-main { color: #c9a227; font-size: 38px; font-weight: 900; line-height: 1; text-shadow: 0 2px 8px rgba(0,0,0,0.4); }
 
     .card-header::after {
       content: '✦';
@@ -74,11 +60,7 @@
       letter-spacing: 12px;
     }
 
-    .event-details {
-      padding: 24px 28px;
-      border-bottom: 2px dashed rgba(201,162,39,0.4);
-    }
-
+    .event-details { padding: 24px 28px; border-bottom: 2px dashed rgba(201,162,39,0.4); }
     .memorial-section { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
 
     .memorial-item {
@@ -110,21 +92,16 @@
     .info-value { font-size: 15px; font-weight: 700; color: #1a3a6b; }
     .info-value.large { font-size: 18px; }
 
-    .gold-line {
-      width: 60px; height: 2px;
-      background: linear-gradient(90deg, transparent, #c9a227, transparent);
-      margin: 0 auto 16px;
-    }
+    .gold-line { width: 60px; height: 2px; background: linear-gradient(90deg, transparent, #c9a227, transparent); margin: 0 auto 16px; }
 
     .form-section { padding: 28px 28px 24px; }
     .form-title { text-align: center; font-size: 22px; font-weight: 700; color: #1a3a6b; margin-bottom: 6px; }
     .form-subtitle { text-align: center; font-size: 13px; color: #7a6035; margin-bottom: 24px; }
-
     .form-group { margin-bottom: 18px; }
 
     label { display: block; font-size: 15px; font-weight: 600; color: #1a3a6b; margin-bottom: 8px; }
 
-    input, select {
+    input {
       width: 100%;
       padding: 14px 16px;
       border: 2px solid rgba(201,162,39,0.4);
@@ -138,7 +115,7 @@
       text-align: right;
     }
 
-    input:focus, select:focus {
+    input:focus {
       border-color: #c9a227;
       box-shadow: 0 0 0 3px rgba(201,162,39,0.15);
       background: rgba(255,255,255,0.95);
@@ -146,11 +123,7 @@
 
     input::placeholder { color: #b0957a; font-size: 14px; }
 
-    .guests-selector {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 8px;
-    }
+    .guests-selector { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
 
     .guest-btn {
       aspect-ratio: 1;
@@ -169,13 +142,7 @@
     }
 
     .guest-btn:hover { border-color: #c9a227; background: rgba(201,162,39,0.1); }
-
-    .guest-btn.selected {
-      background: #1a3a6b;
-      border-color: #1a3a6b;
-      color: #c9a227;
-      box-shadow: 0 4px 12px rgba(26,58,107,0.35);
-    }
+    .guest-btn.selected { background: #1a3a6b; border-color: #1a3a6b; color: #c9a227; box-shadow: 0 4px 12px rgba(26,58,107,0.35); }
 
     .error-msg {
       background: #fee2e2;
@@ -204,8 +171,14 @@
       box-shadow: 0 6px 20px rgba(26,58,107,0.4);
     }
 
-    .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(26,58,107,0.5); }
-    .submit-btn:active { transform: translateY(0); }
+    .submit-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(26,58,107,0.5); }
+    .submit-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+    .success-state { padding: 40px 28px; text-align: center; display: none; }
+    .success-icon { font-size: 64px; margin-bottom: 16px; display: block; }
+    .success-title { font-size: 28px; font-weight: 900; color: #1a3a6b; margin-bottom: 8px; }
+    .success-text { font-size: 16px; color: #5a4825; line-height: 1.6; }
+    .success-note { margin-top: 16px; font-size: 14px; color: #c9a227; font-weight: 600; }
 
     .card-footer {
       background: linear-gradient(135deg, #1a3a6b 0%, #0d2247 100%);
@@ -265,48 +238,50 @@
       </div>
     </div>
 
-    <div class="form-section">
+    <!-- Form -->
+    <div class="form-section" id="form-section">
       <div class="form-title">אישור הגעה</div>
       <div class="form-subtitle">נא אשרו הגעתכם בשבוע הקרוב</div>
 
-      <form id="rsvp-form" action="https://formsubmit.co/0504131240y@gmail.com" method="POST">
-        <!-- FormSubmit settings -->
-        <input type="hidden" name="_subject" value="אישור הגעה – הכנסת ספר תורה" />
-        <input type="hidden" name="_next" value="thankyou.html" />
-        <input type="hidden" name="_captcha" value="false" />
-        <input type="hidden" name="_template" value="table" />
-        <input type="hidden" name="מספר מגיעים" id="guests-hidden" value="" />
+      <div class="form-group">
+        <label>שם מלא <span style="color:#c9a227">*</span></label>
+        <input type="text" id="name" placeholder="הכניסו את שמכם המלא" />
+      </div>
 
-        <div class="form-group">
-          <label for="name">שם מלא <span style="color:#c9a227">*</span></label>
-          <input type="text" id="name" name="שם" placeholder="הכניסו את שמכם המלא" required />
+      <div class="form-group">
+        <label>מספר מגיעים (כולל אתם) <span style="color:#c9a227">*</span></label>
+        <div class="guests-selector">
+          <button type="button" class="guest-btn" data-val="1">1</button>
+          <button type="button" class="guest-btn" data-val="2">2</button>
+          <button type="button" class="guest-btn" data-val="3">3</button>
+          <button type="button" class="guest-btn" data-val="4">4</button>
+          <button type="button" class="guest-btn" data-val="5">5</button>
+          <button type="button" class="guest-btn" data-val="6">6</button>
+          <button type="button" class="guest-btn" data-val="7">7</button>
+          <button type="button" class="guest-btn" data-val="8">8</button>
+          <button type="button" class="guest-btn" data-val="9">9</button>
+          <button type="button" class="guest-btn" data-val="10">10+</button>
         </div>
+      </div>
 
-        <div class="form-group">
-          <label>מספר מגיעים (כולל אתם) <span style="color:#c9a227">*</span></label>
-          <div class="guests-selector">
-            <button type="button" class="guest-btn" data-val="1">1</button>
-            <button type="button" class="guest-btn" data-val="2">2</button>
-            <button type="button" class="guest-btn" data-val="3">3</button>
-            <button type="button" class="guest-btn" data-val="4">4</button>
-            <button type="button" class="guest-btn" data-val="5">5</button>
-            <button type="button" class="guest-btn" data-val="6">6</button>
-            <button type="button" class="guest-btn" data-val="7">7</button>
-            <button type="button" class="guest-btn" data-val="8">8</button>
-            <button type="button" class="guest-btn" data-val="9">9</button>
-            <button type="button" class="guest-btn" data-val="10">10+</button>
-          </div>
-        </div>
+      <div class="form-group">
+        <label>טלפון (אופציונלי)</label>
+        <input type="tel" id="phone" placeholder="050-0000000" />
+      </div>
 
-        <div class="form-group">
-          <label for="phone">טלפון (אופציונלי)</label>
-          <input type="tel" id="phone" name="טלפון" placeholder="050-0000000" />
-        </div>
+      <div id="error-msg" class="error-msg" style="display:none;"></div>
 
-        <div id="error-msg" class="error-msg" style="display:none;">נא בחרו כמה אנשים מגיעים</div>
+      <button class="submit-btn" id="submit-btn" onclick="submitRsvp()">
+        אני מאשר/ת הגעה ✓
+      </button>
+    </div>
 
-        <button type="submit" class="submit-btn">אני מאשר/ת הגעה ✓</button>
-      </form>
+    <!-- Success -->
+    <div class="success-state" id="success-state">
+      <span class="success-icon">🎉</span>
+      <div class="success-title">תודה רבה!</div>
+      <div class="success-text" id="success-text"></div>
+      <div class="success-note">נתראה ביום רביעי, כג תמוז 🕍</div>
     </div>
 
     <div class="card-footer">
@@ -316,25 +291,76 @@
   </div>
 </div>
 
-<script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, addDoc, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZ95Oj9zCaFqM1D5MNLfk4j5ONU-ldPvA",
+    authDomain: "sarusi-bd346.firebaseapp.com",
+    projectId: "sarusi-bd346",
+    storageBucket: "sarusi-bd346.firebasestorage.app",
+    messagingSenderId: "55091879573",
+    appId: "1:55091879573:web:8fcfee18d7e0e6c725859c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
   let selectedGuests = null;
 
   document.querySelectorAll('.guest-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       document.querySelectorAll('.guest-btn').forEach(b => b.classList.remove('selected'));
       btn.classList.add('selected');
-      selectedGuests = btn.dataset.val;
-      document.getElementById('guests-hidden').value = selectedGuests;
+      selectedGuests = parseInt(btn.dataset.val);
       document.getElementById('error-msg').style.display = 'none';
     });
   });
 
-  document.getElementById('rsvp-form').addEventListener('submit', (e) => {
-    if (!selectedGuests) {
-      e.preventDefault();
-      document.getElementById('error-msg').style.display = 'block';
+  window.submitRsvp = async () => {
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const errorEl = document.getElementById('error-msg');
+    const submitBtn = document.getElementById('submit-btn');
+
+    errorEl.style.display = 'none';
+
+    if (!name) {
+      errorEl.textContent = 'נא הכניסו את שמכם המלא';
+      errorEl.style.display = 'block';
+      return;
     }
-  });
+
+    if (!selectedGuests) {
+      errorEl.textContent = 'נא בחרו כמה אנשים מגיעים';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'שולח...';
+
+    try {
+      await addDoc(collection(db, 'rsvps'), {
+        name,
+        guests: selectedGuests,
+        phone: phone || '',
+        timestamp: serverTimestamp()
+      });
+
+      document.getElementById('form-section').style.display = 'none';
+      document.getElementById('success-text').innerHTML =
+        `<strong>${name}</strong>, אישור ההגעה שלכם התקבל!<br/>מספר מגיעים: <strong>${selectedGuests}</strong><br/><br/>נשמח לראותכם!`;
+      document.getElementById('success-state').style.display = 'block';
+
+    } catch (err) {
+      errorEl.textContent = 'אירעה שגיאה, נסו שוב';
+      errorEl.style.display = 'block';
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'אני מאשר/ת הגעה ✓';
+    }
+  };
 </script>
 </body>
 </html>

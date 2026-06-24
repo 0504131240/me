@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ניהול אישורים – הכנסת ספר תורה</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Frank Ruhl Libre', serif;
+      background: #0a1628;
+      min-height: 100vh;
+      padding: 24px 16px;
+      color: #f0e6cc;
+      background-image: radial-gradient(ellipse at top, #1a2d5a 0%, #0a1628 60%);
+    }
+
+    .container { max-width: 860px; margin: 0 auto; }
+
+    .page-header { text-align: center; margin-bottom: 32px; }
+
+    .page-header h1 {
+      color: #c9a227;
+      font-size: 30px;
+      font-weight: 900;
+      margin-bottom: 4px;
+    }
+
+    .page-header p { color: rgba(240,230,204,0.55); font-size: 14px; }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #1a3a6b, #0d2247);
+      border: 1px solid rgba(201,162,39,0.35);
+      border-radius: 14px;
+      padding: 24px 20px;
+      text-align: center;
+    }
+
+    .stat-number { font-size: 52px; font-weight: 900; color: #c9a227; line-height: 1; }
+    .stat-label { font-size: 14px; color: rgba(240,230,204,0.65); margin-top: 8px; }
+
+    .table-card {
+      background: #0e1e3a;
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 14px;
+      overflow: hidden;
+    }
+
+    .table-top {
+      background: linear-gradient(135deg, #1a3a6b, #0d2247);
+      padding: 16px 22px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(201,162,39,0.3);
+    }
+
+    .table-top h2 { color: #c9a227; font-size: 16px; }
+
+    .live-dot {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(240,230,204,0.5);
+    }
+
+    .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #4ade80;
+      box-shadow: 0 0 6px #4ade80;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    th {
+      background: rgba(201,162,39,0.08);
+      color: #c9a227;
+      font-size: 13px;
+      padding: 13px 18px;
+      text-align: right;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+      font-weight: 700;
+    }
+
+    td {
+      padding: 13px 18px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 15px;
+      color: #e0d0b0;
+    }
+
+    tr:last-child td { border-bottom: none; }
+    tr:hover td { background: rgba(201,162,39,0.04); }
+
+    .badge {
+      display: inline-block;
+      background: rgba(201,162,39,0.18);
+      border: 1px solid rgba(201,162,39,0.45);
+      color: #c9a227;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 14px;
+    }
+
+    .time-cell { font-size: 12px; color: rgba(224,208,176,0.45); }
+
+    .num-cell { color: rgba(224,208,176,0.4); font-size: 13px; }
+
+    .empty {
+      text-align: center;
+      padding: 60px 20px;
+      color: rgba(240,230,204,0.3);
+    }
+
+    .empty .icon { font-size: 48px; margin-bottom: 12px; display: block; }
+
+    .loading {
+      text-align: center;
+      padding: 48px;
+      color: rgba(201,162,39,0.5);
+      font-size: 16px;
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <div class="page-header">
+    <h1>ניהול אישורי הגעה</h1>
+    <p>הכנסת ספר תורה • כג תמוז תשפ"ו • מתעדכן בזמן אמת</p>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number" id="total-guests">–</div>
+      <div class="stat-label">סה"כ מגיעים</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="total-rsvps">–</div>
+      <div class="stat-label">אישורים שהתקבלו</div>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-top">
+      <h2>רשימת אישורים</h2>
+      <div class="live-dot">
+        <div class="dot"></div>
+        עדכון חי
+      </div>
+    </div>
+    <div id="table-content">
+      <div class="loading">טוען נתונים...</div>
+    </div>
+  </div>
+
+</div>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCZ95Oj9zCaFqM1D5MNLfk4j5ONU-ldPvA",
+    authDomain: "sarusi-bd346.firebaseapp.com",
+    projectId: "sarusi-bd346",
+    storageBucket: "sarusi-bd346.firebasestorage.app",
+    messagingSenderId: "55091879573",
+    appId: "1:55091879573:web:8fcfee18d7e0e6c725859c"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getFirestore(app);
+
+  const q = query(collection(db, 'rsvps'), orderBy('timestamp', 'desc'));
+
+  onSnapshot(q, (snapshot) => {
+    const rsvps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+    const totalGuests = rsvps.reduce((sum, r) => sum + (r.guests || 0), 0);
+
+    document.getElementById('total-guests').textContent = totalGuests;
+    document.getElementById('total-rsvps').textContent = rsvps.length;
+
+    const content = document.getElementById('table-content');
+
+    if (rsvps.length === 0) {
+      content.innerHTML = `<div class="empty"><span class="icon">📋</span><p>עדיין אין אישורים</p></div>`;
+      return;
+    }
+
+    const rows = rsvps.map((r, i) => {
+      const ts = r.timestamp?.toDate();
+      const dateStr = ts
+        ? ts.toLocaleDateString('he-IL') + ' ' + ts.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+        : '–';
+
+      return `<tr>
+        <td class="num-cell">${rsvps.length - i}</td>
+        <td><strong>${r.name}</strong></td>
+        <td><span class="badge">${r.guests}</span></td>
+        <td>${r.phone || '–'}</td>
+        <td class="time-cell">${dateStr}</td>
+      </tr>`;
+    }).join('');
+
+    content.innerHTML = `
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>שם</th>
+            <th>מגיעים</th>
+            <th>טלפון</th>
+            <th>שעת אישור</th>
+          </tr>
+        </thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+  });
+</script>
+</body>
+</html>
