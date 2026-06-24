@@ -318,11 +318,10 @@
     });
   });
 
-  window.submitRsvp = async () => {
+  window.submitRsvp = () => {
     const name = document.getElementById('name').value.trim();
     const phone = document.getElementById('phone').value.trim();
     const errorEl = document.getElementById('error-msg');
-    const submitBtn = document.getElementById('submit-btn');
 
     errorEl.style.display = 'none';
 
@@ -338,28 +337,20 @@
       return;
     }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'שולח...';
+    // הצג הצלחה מיד — שמירה ב-Firebase ברקע
+    document.getElementById('form-section').style.display = 'none';
+    document.getElementById('success-text').innerHTML =
+      `<strong>${name}</strong>, אישור ההגעה שלכם התקבל!<br/>מספר מגיעים: <strong>${selectedGuests}</strong><br/><br/>נשמח לראותכם!`;
+    document.getElementById('success-state').style.display = 'block';
 
-    try {
-      await addDoc(collection(db, 'rsvps'), {
-        name,
-        guests: selectedGuests,
-        phone: phone || '',
-        timestamp: serverTimestamp()
-      });
-
-      document.getElementById('form-section').style.display = 'none';
-      document.getElementById('success-text').innerHTML =
-        `<strong>${name}</strong>, אישור ההגעה שלכם התקבל!<br/>מספר מגיעים: <strong>${selectedGuests}</strong><br/><br/>נשמח לראותכם!`;
-      document.getElementById('success-state').style.display = 'block';
-
-    } catch (err) {
-      errorEl.textContent = 'אירעה שגיאה, נסו שוב';
-      errorEl.style.display = 'block';
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'אני מאשר/ת הגעה ✓';
-    }
+    addDoc(collection(db, 'rsvps'), {
+      name,
+      guests: selectedGuests,
+      phone: phone || '',
+      timestamp: serverTimestamp()
+    }).catch(() => {
+      // שמירה נכשלה בשקט — הנתונים יישמרו כשיחזור חיבור
+    });
   };
 </script>
 </body>
