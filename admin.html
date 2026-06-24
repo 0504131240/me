@@ -139,6 +139,19 @@
       color: rgba(201,162,39,0.5);
       font-size: 16px;
     }
+
+    .del-btn {
+      background: rgba(239,68,68,0.12);
+      border: 1px solid rgba(239,68,68,0.35);
+      color: #f87171;
+      padding: 4px 12px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+    .del-btn:hover { background: rgba(239,68,68,0.25); border-color: #f87171; }
   </style>
 </head>
 <body>
@@ -183,11 +196,18 @@
   function parseDoc(doc) {
     const f = doc.fields || {};
     return {
+      docName:   doc.name,
       name:      f.name?.stringValue || '',
       guests:    f.guests?.integerValue || f.guests?.doubleValue || 0,
       phone:     f.phone?.stringValue || '',
       timestamp: f.timestamp?.timestampValue || null
     };
+  }
+
+  async function deleteRsvp(docName) {
+    if (!confirm('למחוק נרשם זה?')) return;
+    await fetch(`https://firestore.googleapis.com/v1/${docName}?key=${API_KEY}`, { method: 'DELETE' });
+    load();
   }
 
   function render(rsvps) {
@@ -206,19 +226,21 @@
       const dateStr = r.timestamp
         ? new Date(r.timestamp).toLocaleString('he-IL', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
         : '–';
+      const safeDoc = encodeURIComponent(JSON.stringify(r.docName));
       return `<tr>
         <td class="num-cell">${i + 1}</td>
         <td><strong>${r.name}</strong></td>
         <td><span class="badge">${r.guests}</span></td>
         <td>${r.phone || '–'}</td>
         <td class="time-cell">${dateStr}</td>
+        <td><button class="del-btn" onclick='deleteRsvp(${JSON.stringify(r.docName)})'>מחק</button></td>
       </tr>`;
     }).join('');
 
     content.innerHTML = `
       <table>
         <thead><tr>
-          <th>#</th><th>שם</th><th>מגיעים</th><th>טלפון</th><th>שעת אישור</th>
+          <th>#</th><th>שם</th><th>מגיעים</th><th>טלפון</th><th>שעת אישור</th><th></th>
         </tr></thead>
         <tbody>${rows}</tbody>
       </table>`;
