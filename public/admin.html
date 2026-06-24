@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ניהול אישורים – הכנסת ספר תורה</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@400;700;900&display=swap');
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Frank Ruhl Libre', serif;
+      background: #0a1628;
+      min-height: 100vh;
+      padding: 24px 16px;
+      color: #f0e6cc;
+    }
+
+    .container { max-width: 800px; margin: 0 auto; }
+
+    h1 {
+      text-align: center;
+      color: #c9a227;
+      font-size: 28px;
+      margin-bottom: 8px;
+    }
+
+    .subtitle {
+      text-align: center;
+      color: rgba(240,230,204,0.6);
+      margin-bottom: 28px;
+      font-size: 14px;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+      margin-bottom: 28px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, #1a3a6b, #0d2247);
+      border: 1px solid rgba(201,162,39,0.3);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+    }
+
+    .stat-number {
+      font-size: 48px;
+      font-weight: 900;
+      color: #c9a227;
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 14px;
+      color: rgba(240,230,204,0.7);
+      margin-top: 6px;
+    }
+
+    .table-wrapper {
+      background: #101f3d;
+      border: 1px solid rgba(201,162,39,0.2);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, #1a3a6b, #0d2247);
+      padding: 16px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(201,162,39,0.3);
+    }
+
+    .table-header h2 {
+      color: #c9a227;
+      font-size: 16px;
+    }
+
+    .refresh-btn {
+      background: rgba(201,162,39,0.15);
+      border: 1px solid rgba(201,162,39,0.4);
+      color: #c9a227;
+      padding: 6px 14px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-family: inherit;
+      font-size: 13px;
+      transition: all 0.15s;
+    }
+
+    .refresh-btn:hover {
+      background: rgba(201,162,39,0.25);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: rgba(201,162,39,0.08);
+      color: #c9a227;
+      font-size: 13px;
+      padding: 12px 16px;
+      text-align: right;
+      border-bottom: 1px solid rgba(201,162,39,0.15);
+    }
+
+    td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(255,255,255,0.05);
+      font-size: 14px;
+      color: #e0d0b0;
+    }
+
+    tr:last-child td { border-bottom: none; }
+
+    tr:hover td { background: rgba(201,162,39,0.04); }
+
+    .guests-badge {
+      display: inline-block;
+      background: rgba(201,162,39,0.2);
+      border: 1px solid rgba(201,162,39,0.4);
+      color: #c9a227;
+      padding: 2px 10px;
+      border-radius: 20px;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 48px 20px;
+      color: rgba(240,230,204,0.4);
+    }
+
+    .empty-state .icon { font-size: 48px; margin-bottom: 12px; }
+
+    .loading {
+      text-align: center;
+      padding: 40px;
+      color: rgba(201,162,39,0.6);
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>ניהול אישורי הגעה</h1>
+  <p class="subtitle">הכנסת ספר תורה • כג תמוז תשפ"ו</p>
+
+  <div class="stats">
+    <div class="stat-card">
+      <div class="stat-number" id="total-people">–</div>
+      <div class="stat-label">סה"כ מגיעים</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-number" id="total-families">–</div>
+      <div class="stat-label">משפחות / נרשמים</div>
+    </div>
+  </div>
+
+  <div class="table-wrapper">
+    <div class="table-header">
+      <h2>רשימת אישורים</h2>
+      <button class="refresh-btn" onclick="loadData()">רענן ↻</button>
+    </div>
+    <div id="table-content">
+      <div class="loading">טוען נתונים...</div>
+    </div>
+  </div>
+</div>
+
+<script>
+  async function loadData() {
+    const content = document.getElementById('table-content');
+    try {
+      const res = await fetch('/api/rsvps');
+      const data = await res.json();
+
+      document.getElementById('total-people').textContent = data.total;
+      document.getElementById('total-families').textContent = data.count;
+
+      if (data.count === 0) {
+        content.innerHTML = `<div class="empty-state"><div class="icon">📋</div><p>עדיין אין אישורים</p></div>`;
+        return;
+      }
+
+      const rows = data.rsvps.map((r, i) => {
+        const date = new Date(r.timestamp);
+        const dateStr = date.toLocaleDateString('he-IL') + ' ' + date.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' });
+        return `<tr>
+          <td>${i + 1}</td>
+          <td>${r.name}</td>
+          <td><span class="guests-badge">${r.guests}</span></td>
+          <td>${r.phone || '–'}</td>
+          <td style="font-size:12px;color:rgba(224,208,176,0.5)">${dateStr}</td>
+        </tr>`;
+      }).join('');
+
+      content.innerHTML = `<table>
+        <thead><tr>
+          <th>#</th><th>שם</th><th>מגיעים</th><th>טלפון</th><th>תאריך אישור</th>
+        </tr></thead>
+        <tbody>${rows}</tbody>
+      </table>`;
+    } catch {
+      content.innerHTML = `<div class="empty-state"><div class="icon">⚠️</div><p>שגיאה בטעינת נתונים</p></div>`;
+    }
+  }
+
+  loadData();
+</script>
+</body>
+</html>

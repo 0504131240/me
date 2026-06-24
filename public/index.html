@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>אישור הגעה – הכנסת ספר תורה</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@300;400;500;700;900&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Frank Ruhl Libre', 'David Libre', serif;
+      background: #0a1628;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background-image:
+        radial-gradient(ellipse at top, #1a2d5a 0%, #0a1628 60%),
+        url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23c9a227' fill-opacity='0.04'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    .page-wrapper {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .card {
+      background: linear-gradient(160deg, #fdf6e3 0%, #f5e6c8 50%, #fdf0d0 100%);
+      border-radius: 16px;
+      border: 3px solid #c9a227;
+      box-shadow:
+        0 0 0 6px rgba(201, 162, 39, 0.2),
+        0 20px 60px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255,255,255,0.5);
+      overflow: hidden;
+    }
+
+    .card-header {
+      background: linear-gradient(135deg, #1a3a6b 0%, #0d2247 50%, #1a3a6b 100%);
+      padding: 30px 24px 24px;
+      text-align: center;
+      position: relative;
+      border-bottom: 3px solid #c9a227;
+    }
+
+    .card-header::before {
+      content: '✦';
+      display: block;
+      color: #c9a227;
+      font-size: 14px;
+      margin-bottom: 8px;
+      letter-spacing: 12px;
+    }
+
+    .header-top-text {
+      color: #c9a227;
+      font-size: 13px;
+      letter-spacing: 1px;
+      margin-bottom: 12px;
+      opacity: 0.9;
+    }
+
+    .header-title {
+      color: #ffffff;
+      font-size: 15px;
+      font-weight: 400;
+      margin-bottom: 6px;
+      letter-spacing: 1px;
+    }
+
+    .header-main {
+      color: #c9a227;
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+    }
+
+    .card-header::after {
+      content: '✦';
+      display: block;
+      color: #c9a227;
+      font-size: 14px;
+      margin-top: 12px;
+      letter-spacing: 12px;
+    }
+
+    .event-details {
+      padding: 24px 28px;
+      border-bottom: 2px dashed rgba(201, 162, 39, 0.4);
+    }
+
+    .memorial-section {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .memorial-item {
+      text-align: center;
+      padding: 12px;
+      background: rgba(201, 162, 39, 0.08);
+      border-radius: 10px;
+      border: 1px solid rgba(201, 162, 39, 0.25);
+    }
+
+    .memorial-label {
+      font-size: 13px;
+      color: #7a6035;
+      margin-bottom: 4px;
+    }
+
+    .memorial-name {
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a3a6b;
+    }
+
+    .memorial-subtitle {
+      font-size: 13px;
+      color: #5a4825;
+      margin-top: 2px;
+    }
+
+    .divider {
+      text-align: center;
+      color: #c9a227;
+      font-size: 18px;
+      letter-spacing: 8px;
+      margin: 4px 0;
+    }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .info-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      padding: 10px;
+      background: rgba(26, 58, 107, 0.06);
+      border-radius: 8px;
+      border: 1px solid rgba(26, 58, 107, 0.12);
+    }
+
+    .info-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .info-icon {
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+
+    .info-label {
+      font-size: 11px;
+      color: #7a6035;
+      margin-bottom: 2px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .info-value {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a3a6b;
+    }
+
+    .info-value.large {
+      font-size: 18px;
+    }
+
+    .form-section {
+      padding: 28px 28px 24px;
+    }
+
+    .form-title {
+      text-align: center;
+      font-size: 22px;
+      font-weight: 700;
+      color: #1a3a6b;
+      margin-bottom: 6px;
+    }
+
+    .form-subtitle {
+      text-align: center;
+      font-size: 13px;
+      color: #7a6035;
+      margin-bottom: 24px;
+    }
+
+    .form-group {
+      margin-bottom: 18px;
+    }
+
+    label {
+      display: block;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a3a6b;
+      margin-bottom: 8px;
+    }
+
+    input {
+      width: 100%;
+      padding: 14px 16px;
+      border: 2px solid rgba(201, 162, 39, 0.4);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.7);
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 16px;
+      color: #1a1a1a;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      outline: none;
+      text-align: right;
+    }
+
+    input:focus {
+      border-color: #c9a227;
+      box-shadow: 0 0 0 3px rgba(201, 162, 39, 0.15);
+      background: rgba(255, 255, 255, 0.95);
+    }
+
+    input::placeholder {
+      color: #b0957a;
+      font-size: 14px;
+    }
+
+    .guests-selector {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    .guest-btn {
+      aspect-ratio: 1;
+      border: 2px solid rgba(201, 162, 39, 0.4);
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.6);
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #1a3a6b;
+      cursor: pointer;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .guest-btn:hover {
+      border-color: #c9a227;
+      background: rgba(201, 162, 39, 0.1);
+    }
+
+    .guest-btn.selected {
+      background: #1a3a6b;
+      border-color: #1a3a6b;
+      color: #c9a227;
+      box-shadow: 0 4px 12px rgba(26, 58, 107, 0.35);
+    }
+
+    .submit-btn {
+      width: 100%;
+      padding: 18px;
+      background: linear-gradient(135deg, #1a3a6b 0%, #0d2247 100%);
+      color: #c9a227;
+      border: none;
+      border-radius: 12px;
+      font-family: 'Frank Ruhl Libre', serif;
+      font-size: 20px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-top: 8px;
+      transition: all 0.2s;
+      box-shadow: 0 6px 20px rgba(26, 58, 107, 0.4);
+      letter-spacing: 0.5px;
+    }
+
+    .submit-btn:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px rgba(26, 58, 107, 0.5);
+    }
+
+    .submit-btn:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .error-msg {
+      background: #fee2e2;
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+      padding: 12px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      margin-top: 14px;
+      text-align: center;
+    }
+
+    .success-state {
+      padding: 40px 28px;
+      text-align: center;
+      display: none;
+    }
+
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    .success-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: #1a3a6b;
+      margin-bottom: 8px;
+    }
+
+    .success-text {
+      font-size: 16px;
+      color: #5a4825;
+      line-height: 1.6;
+    }
+
+    .success-text strong {
+      color: #1a3a6b;
+    }
+
+    .success-note {
+      margin-top: 16px;
+      font-size: 14px;
+      color: #c9a227;
+      font-weight: 600;
+    }
+
+    .card-footer {
+      background: linear-gradient(135deg, #1a3a6b 0%, #0d2247 100%);
+      padding: 14px;
+      text-align: center;
+      border-top: 2px solid #c9a227;
+    }
+
+    .card-footer p {
+      color: rgba(201, 162, 39, 0.8);
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .gold-line {
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(90deg, transparent, #c9a227, transparent);
+      margin: 0 auto 16px;
+    }
+
+    @media (max-width: 400px) {
+      .info-grid { grid-template-columns: 1fr; }
+      .info-item.full-width { grid-column: 1; }
+      .guests-selector { grid-template-columns: repeat(5, 1fr); }
+      .header-main { font-size: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page-wrapper">
+  <div class="card">
+
+    <!-- Header -->
+    <div class="card-header">
+      <div class="header-top-text">כִּי מִצִּיּוֹן תֵּצֵא תוֹרָה וּדְבַר ה' מִירוּשָׁלָיִם</div>
+      <div class="header-title">להכנסת</div>
+      <div class="header-main">ספר תורה</div>
+    </div>
+
+    <!-- Event Details -->
+    <div class="event-details">
+      <div class="memorial-section">
+        <div class="memorial-item">
+          <div class="memorial-label">לע"נ</div>
+          <div class="memorial-name">רבי אהרן סרוסי ז"ל</div>
+          <div class="memorial-subtitle">בן חי ומיליה ע"ה</div>
+        </div>
+        <div class="divider">◆</div>
+        <div class="memorial-item">
+          <div class="memorial-label">ולע"נ</div>
+          <div class="memorial-name">נינה מרגושה ז"ל</div>
+          <div class="memorial-subtitle">בת שלמה ועזיזה ע"ה</div>
+        </div>
+      </div>
+
+      <div class="gold-line"></div>
+
+      <div class="info-grid">
+        <div class="info-item full-width">
+          <div class="info-icon">🕍</div>
+          <div class="info-label">מיקום</div>
+          <div class="info-value">אולם אחיעזר</div>
+          <div class="memorial-subtitle" style="margin-top:2px;">רחוב יהודה הנשיא 26, אלעד</div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">📅</div>
+          <div class="info-label">תאריך</div>
+          <div class="info-value">כג תמוז תשפ"ו</div>
+          <div class="memorial-subtitle">8/7/26 – יום רביעי</div>
+        </div>
+        <div class="info-item">
+          <div class="info-icon">🕯️</div>
+          <div class="info-label">שעה</div>
+          <div class="info-value large">19:45</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RSVP Form -->
+    <div class="form-section" id="form-section">
+      <div class="form-title">אישור הגעה</div>
+      <div class="form-subtitle">נא אשרו הגעתכם בשבוע הקרוב</div>
+
+      <form id="rsvp-form">
+        <div class="form-group">
+          <label for="name">שם מלא <span style="color:#c9a227">*</span></label>
+          <input
+            type="text"
+            id="name"
+            placeholder="הכניסו את שמכם המלא"
+            required
+            autocomplete="off"
+          />
+        </div>
+
+        <div class="form-group">
+          <label>מספר מגיעים (כולל אתם) <span style="color:#c9a227">*</span></label>
+          <div class="guests-selector">
+            <button type="button" class="guest-btn" data-val="1">1</button>
+            <button type="button" class="guest-btn" data-val="2">2</button>
+            <button type="button" class="guest-btn" data-val="3">3</button>
+            <button type="button" class="guest-btn" data-val="4">4</button>
+            <button type="button" class="guest-btn" data-val="5">5</button>
+            <button type="button" class="guest-btn" data-val="6">6</button>
+            <button type="button" class="guest-btn" data-val="7">7</button>
+            <button type="button" class="guest-btn" data-val="8">8</button>
+            <button type="button" class="guest-btn" data-val="9">9</button>
+            <button type="button" class="guest-btn" data-val="10">10+</button>
+          </div>
+          <input type="hidden" id="guests" value="" />
+        </div>
+
+        <div class="form-group">
+          <label for="phone">טלפון (אופציונלי)</label>
+          <input
+            type="tel"
+            id="phone"
+            placeholder="050-0000000"
+            autocomplete="off"
+          />
+        </div>
+
+        <div id="error-msg" class="error-msg" style="display:none;"></div>
+
+        <button type="submit" class="submit-btn" id="submit-btn">
+          אני מאשר/ת הגעה ✓
+        </button>
+      </form>
+    </div>
+
+    <!-- Success State -->
+    <div class="success-state" id="success-state">
+      <span class="success-icon">🎉</span>
+      <div class="success-title">תודה רבה!</div>
+      <div class="success-text" id="success-text">
+        אישור ההגעה שלכם התקבל בהצלחה.<br/>
+        נשמח לראותכם באירוע!
+      </div>
+      <div class="success-note">נתראה ביום רביעי, כג תמוז 🕍</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="card-footer">
+      <p>הכנסת ספר תורה • כג תמוז תשפ"ו</p>
+      <p>אולם אחיעזר, אלעד</p>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  let selectedGuests = null;
+
+  document.querySelectorAll('.guest-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.guest-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      selectedGuests = parseInt(btn.dataset.val);
+      document.getElementById('guests').value = selectedGuests;
+    });
+  });
+
+  document.getElementById('rsvp-form').addEventListener('submit', async (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById('name').value.trim();
+    const phone = document.getElementById('phone').value.trim();
+    const errorEl = document.getElementById('error-msg');
+    const submitBtn = document.getElementById('submit-btn');
+
+    errorEl.style.display = 'none';
+
+    if (!name) {
+      showError('נא הכניסו את שמכם המלא');
+      return;
+    }
+
+    if (!selectedGuests) {
+      showError('נא בחרו כמה אנשים מגיעים');
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'שולח...';
+
+    try {
+      const response = await fetch('/api/rsvp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name, guests: selectedGuests, phone })
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        showError(data.error || 'אירעה שגיאה, נסו שוב');
+        submitBtn.disabled = false;
+        submitBtn.textContent = 'אני מאשר/ת הגעה ✓';
+        return;
+      }
+
+      document.getElementById('form-section').style.display = 'none';
+      const successState = document.getElementById('success-state');
+      document.getElementById('success-text').innerHTML =
+        `<strong>${name}</strong>, אישור ההגעה שלכם התקבל בהצלחה.<br/>` +
+        `מספר מגיעים: <strong>${selectedGuests}</strong><br/><br/>` +
+        `נשמח לראותכם באירוע!`;
+      successState.style.display = 'block';
+
+    } catch (err) {
+      showError('אירעה שגיאת תקשורת, נסו שוב');
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'אני מאשר/ת הגעה ✓';
+    }
+  });
+
+  function showError(msg) {
+    const el = document.getElementById('error-msg');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+</script>
+
+</body>
+</html>
