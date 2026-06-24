@@ -165,7 +165,7 @@
       <h2>רשימת אישורים</h2>
       <div class="live-dot">
         <div class="dot"></div>
-        עדכון חי
+        מתרענן כל 20 שניות
       </div>
     </div>
     <div id="table-content">
@@ -175,28 +175,23 @@
 
 </div>
 
-<script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+<script>
+  const PROJECT = 'sarusi-bd346';
+  const API_KEY = 'AIzaSyCZ95Oj9zCaFqM1D5MNLfk4j5ONU-ldPvA';
+  const URL = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/rsvps?key=${API_KEY}&pageSize=300&orderBy=timestamp%20desc`;
 
-  const firebaseConfig = {
-    apiKey: "AIzaSyCZ95Oj9zCaFqM1D5MNLfk4j5ONU-ldPvA",
-    authDomain: "sarusi-bd346.firebaseapp.com",
-    projectId: "sarusi-bd346",
-    storageBucket: "sarusi-bd346.firebasestorage.app",
-    messagingSenderId: "55091879573",
-    appId: "1:55091879573:web:8fcfee18d7e0e6c725859c"
-  };
+  function parseDoc(doc) {
+    const f = doc.fields || {};
+    return {
+      name:      f.name?.stringValue || '',
+      guests:    f.guests?.integerValue || f.guests?.doubleValue || 0,
+      phone:     f.phone?.stringValue || '',
+      timestamp: f.timestamp?.timestampValue || null
+    };
+  }
 
-  const app = initializeApp(firebaseConfig);
-  const db = getFirestore(app);
-
-  const q = query(collection(db, 'rsvps'), orderBy('timestamp', 'desc'));
-
-  onSnapshot(q, (snapshot) => {
-    const rsvps = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-    const totalGuests = rsvps.reduce((sum, r) => sum + (r.guests || 0), 0);
-
+  function render(rsvps) {
+    const totalGuests = rsvps.reduce((sum, r) => sum + Number(r.guests), 0);
     document.getElementById('total-guests').textContent = totalGuests;
     document.getElementById('total-rsvps').textContent = rsvps.length;
 
@@ -208,13 +203,11 @@
     }
 
     const rows = rsvps.map((r, i) => {
-      const ts = r.timestamp?.toDate();
-      const dateStr = ts
-        ? ts.toLocaleDateString('he-IL') + ' ' + ts.toLocaleTimeString('he-IL', { hour: '2-digit', minute: '2-digit' })
+      const dateStr = r.timestamp
+        ? new Date(r.timestamp).toLocaleString('he-IL', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' })
         : '–';
-
       return `<tr>
-        <td class="num-cell">${rsvps.length - i}</td>
+        <td class="num-cell">${i + 1}</td>
         <td><strong>${r.name}</strong></td>
         <td><span class="badge">${r.guests}</span></td>
         <td>${r.phone || '–'}</td>
@@ -224,18 +217,27 @@
 
     content.innerHTML = `
       <table>
-        <thead>
-          <tr>
-            <th>#</th>
-            <th>שם</th>
-            <th>מגיעים</th>
-            <th>טלפון</th>
-            <th>שעת אישור</th>
-          </tr>
-        </thead>
+        <thead><tr>
+          <th>#</th><th>שם</th><th>מגיעים</th><th>טלפון</th><th>שעת אישור</th>
+        </tr></thead>
         <tbody>${rows}</tbody>
       </table>`;
-  });
+  }
+
+  async function load() {
+    try {
+      const res = await fetch(URL);
+      const data = await res.json();
+      const docs = data.documents || [];
+      render(docs.map(parseDoc));
+    } catch {
+      document.getElementById('table-content').innerHTML =
+        `<div class="empty"><span class="icon">⚠️</span><p>שגיאה בטעינה</p></div>`;
+    }
+  }
+
+  load();
+  setInterval(load, 20000); // רענון אוטומטי כל 20 שניות
 </script>
 </body>
 </html>
