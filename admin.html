@@ -178,7 +178,7 @@
 <script>
   const PROJECT = 'sarusi-bd346';
   const API_KEY = 'AIzaSyCZ95Oj9zCaFqM1D5MNLfk4j5ONU-ldPvA';
-  const URL = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/rsvps?key=${API_KEY}&pageSize=300&orderBy=timestamp%20desc`;
+  const URL = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents/rsvps?key=${API_KEY}&pageSize=300`;
 
   function parseDoc(doc) {
     const f = doc.fields || {};
@@ -228,11 +228,17 @@
     try {
       const res = await fetch(URL);
       const data = await res.json();
+      if (data.error) throw new Error(data.error.message);
       const docs = data.documents || [];
-      render(docs.map(parseDoc));
-    } catch {
+      const rsvps = docs.map(parseDoc).sort((a, b) => {
+        if (!a.timestamp) return 1;
+        if (!b.timestamp) return -1;
+        return new Date(b.timestamp) - new Date(a.timestamp);
+      });
+      render(rsvps);
+    } catch (e) {
       document.getElementById('table-content').innerHTML =
-        `<div class="empty"><span class="icon">⚠️</span><p>שגיאה בטעינה</p></div>`;
+        `<div class="empty"><span class="icon">⚠️</span><p>שגיאה: ${e.message}</p></div>`;
     }
   }
 
